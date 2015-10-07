@@ -6,6 +6,7 @@ import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
+import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.util.AttributeSource;
 import org.apache.lucene.util.Version;
 
@@ -15,6 +16,8 @@ public final class ConcatenateFilter extends TokenFilter {
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
+    private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
+    
     private String tokenSeparator = null;
     private int incrementGap = 100;
     private StringBuilder builder = new StringBuilder();
@@ -63,6 +66,7 @@ public final class ConcatenateFilter extends TokenFilter {
 
         if (builder.length()>0) {
             termAtt.setEmpty().append(builder);
+            offsetAtt.setOffset(0, termAtt.length());
 	    if(!recheckPrevious) {
 	        empty = true;
 	    }
